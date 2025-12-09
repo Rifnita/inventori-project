@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api", // ganti kalau backend-mu beda
+  baseURL: "https://inventori-backend-894858667370.us-central1.run.app/api",
 });
 
 api.interceptors.request.use((config) => {

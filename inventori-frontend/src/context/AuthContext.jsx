@@ -1,76 +1,89 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
+import api from "../api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);   // { id, name, email, role }
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Ambil user dari localStorage saat pertama kali load
+  // Check authentication on load
   useEffect(() => {
-    const saved = localStorage.getItem("inventori_user");
-    if (saved) {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("inventori_user");
+    
+    if (token && savedUser) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(savedUser);
         setUser(parsed);
       } catch {
+        localStorage.removeItem("token");
         localStorage.removeItem("inventori_user");
       }
     }
     setLoading(false);
   }, []);
 
-  // === LOGIN DUMMY (TANPA BACKEND) ===
+  // Login with backend API
   const login = async (email, password) => {
-    // kamu bisa bebas ubah kombinasi ini
-    let loggedUser = null;
+    try {
+      const response = await api.post("/login", { email, password });
+      const { token, user: userData } = response.data;
 
-    if (email === "admin@example.com" && password === "admin123") {
-      loggedUser = {
-        id: 1,
-        name: "Admin",
-        email,
-        role: "admin",
-      };
-    } else if (email === "staff@example.com" && password === "staff123") {
-      loggedUser = {
-        id: 2,
-        name: "Staff",
-        email,
-        role: "staff",
-      };
-    } else {
-      // kalau salah, lempar error biar bisa ditangkap di LoginPage
-      throw new Error("INVALID_CREDENTIAL");
+      // Save token and user data
+      localStorage.setItem("token", token);
+      localStorage.setItem("inventori_user", JSON.stringify(userData));
+      
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        throw new Error("INVALID_CREDENTIAL");
+      }
+      throw new Error(error.response?.data?.message || "Login failed");
     }
-
-    setUser(loggedUser);
-    localStorage.setItem("inventori_user", JSON.stringify(loggedUser));
   };
 
+  // Logout
   const logout = async () => {
-    localStorage.removeItem("inventori_user");
-    setUser(null);
+    try {
+      await api.post("/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("inventori_user");
+      setUser(null);
+    }
   };
 
-  // === UPDATE PROFIL (dummy, hanya di frontend) ===
+  // Update profile
   const updateProfile = async (partial) => {
-    setUser((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, ...partial };
-      localStorage.setItem("inventori_user", JSON.stringify(updated));
-      return updated;
-    });
+    try {
+      const response = await api.put("/profile", partial);
+      const updatedUser = response.data.user;
+      
+      setUser(updatedUser);
+      localStorage.setItem("inventori_user", JSON.stringify(updatedUser));
+      
+      return updatedUser;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Update profile failed");
+    }
   };
 
-  // === UPDATE PASSWORD (dummy, belum ke backend) ===
+  // Update password
   const updatePassword = async ({ oldPassword, newPassword }) => {
-    // Di sini belum ada cek password lama karena belum ada backend.
-    // Nanti kalau sudah ada API, tinggal panggil endpoint:
-    // await api.post("/change-password", { oldPassword, newPassword });
-    console.log("Dummy change password:", { oldPassword, newPassword });
-    return true;
+    try {
+      await api.post("/change-password", { 
+        current_password: oldPassword, 
+        new_password: newPassword 
+      });
+      return true;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Change password failed");
+    }
   };
 
   return (

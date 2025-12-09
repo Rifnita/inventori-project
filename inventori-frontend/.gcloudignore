@@ -1,0 +1,7 @@
+# Ignore everything by default
+*
+
+# Except these files
+!Dockerfile
+!docker/
+!dist/

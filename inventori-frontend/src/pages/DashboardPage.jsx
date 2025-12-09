@@ -1,20 +1,93 @@
 // src/pages/DashboardPage.jsx
 import { useAuth } from "../context/AuthContext.jsx";
+import { useEffect, useState } from "react";
+import api from "../api";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const isStaff = user?.role === "staff";
 
-  const summary = {
+  const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState({
     totalBarang: 0,
     totalBarangMasuk: 0,
     totalBarangKeluar: 0,
     totalUser: 0,
     totalTransaksiSaya: 0,
+  });
+  const [minStock, setMinStock] = useState([]);
+  const [recentTransactions, setRecentTransactions] = useState([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/dashboard");
+      const data = response.data;
+
+      setSummary({
+        totalBarang: data.summary?.total_products || 0,
+        totalBarangMasuk: data.summary?.monthly_incoming || 0,
+        totalBarangKeluar: data.summary?.monthly_outgoing || 0,
+        totalUser: 0, // Nanti bisa tambahkan endpoint untuk user count
+        totalTransaksiSaya: data.summary?.today_incoming + data.summary?.today_outgoing || 0,
+      });
+
+      // Products with low stock (< 10)
+      const lowStockProducts = (data.top_products || [])
+        .filter(p => p.stock < 10)
+        .map(p => ({
+          id: p.id,
+          kode: p.code,
+          nama: p.name,
+          jenis: p.category,
+          stok: p.stock,
+          satuan: p.unit
+        }));
+      setMinStock(lowStockProducts);
+
+      // Recent transactions
+      const incoming = (data.recent_incoming || []).map(item => ({
+        id: `in-${item.id}`,
+        tanggal: new Date(item.date).toLocaleDateString('id-ID'),
+        jenis: 'Masuk',
+        barang: item.product?.name || '-',
+        jumlah: item.quantity,
+        keterangan: item.notes || item.supplier || '-'
+      }));
+
+      const outgoing = (data.recent_outgoing || []).map(item => ({
+        id: `out-${item.id}`,
+        tanggal: new Date(item.date).toLocaleDateString('id-ID'),
+        jenis: 'Keluar',
+        barang: item.product?.name || '-',
+        jumlah: item.quantity,
+        keterangan: item.notes || item.recipient || '-'
+      }));
+
+      setRecentTransactions([...incoming, ...outgoing].sort((a, b) => 
+        new Date(b.tanggal) - new Date(a.tanggal)
+      ).slice(0, 10));
+
+    } catch (error) {
+      console.error("Error fetching dashboard:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const minStock = [];
-  const recentTransactions = [];
+  if (loading) {
+    return (
+      <div className="page">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          Loading dashboard data...
+        </div>
+      </div>
+    );
+  }
 
   /* =================== DASHBOARD STAFF =================== */
   if (isStaff) {
