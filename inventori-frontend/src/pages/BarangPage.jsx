@@ -1,5 +1,6 @@
 // src/pages/BarangPage.jsx
 import { useEffect, useState } from "react";
+import api from "../api";
 
 const DEFAULT_CATEGORIES = [
   "IT",
@@ -10,10 +11,9 @@ const DEFAULT_CATEGORIES = [
   "Lainnya",
 ];
 
-const STORAGE_KEY = "inventori_barang";
-
 export default function BarangPage() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [previewPhoto, setPreviewPhoto] = useState(null);
 
@@ -25,25 +25,40 @@ export default function BarangPage() {
     stokAwal: 0,
     hargaBeli: "",
     hargaJual: "",
-    foto: "", // akan menyimpan URL lokal (sementara)
+    foto: "",
   });
 
-  // --- Load data awal dari localStorage (sementara, nanti bisa diganti API) ---
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        setItems(parsed);
-      } catch {
-        // lewat saja
-      }
-    }
+    fetchProducts();
   }, []);
 
-  const syncToStorage = (next) => {
-    setItems(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/products");
+      const products = response.data.data || response.data;
+      
+      // Map backend data to frontend format
+      const mappedProducts = products.map(p => ({
+        id: p.id,
+        nama: p.name,
+        kode: p.code,
+        kategori: p.category,
+        satuan: p.unit,
+        stokAwal: p.stock,
+        hargaBeli: p.purchase_price,
+        hargaJual: p.selling_price,
+        foto: p.photo || "",
+        createdAt: p.created_at
+      }));
+      
+      setItems(mappedProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      alert("Gagal memuat data barang");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetForm = () => {
@@ -84,7 +99,7 @@ export default function BarangPage() {
     setForm((prev) => ({ ...prev, foto: url }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.nama || !form.kode) {
@@ -92,23 +107,31 @@ export default function BarangPage() {
       return;
     }
 
-    if (editingId) {
-      // update
-      const next = items.map((it) =>
-        it.id === editingId ? { ...it, ...form } : it
-      );
-      syncToStorage(next);
-    } else {
-      // tambah baru
-      const newItem = {
-        id: crypto.randomUUID(),
-        ...form,
-        createdAt: new Date().toISOString(),
+    try {
+      const payload = {
+        name: form.nama,
+        code: form.kode,
+        category: form.kategori,
+        unit: form.satuan,
+        stock: form.stokAwal,
+        purchase_price: form.hargaBeli || 0,
+        selling_price: form.hargaJual || 0,
       };
-      syncToStorage([...items, newItem]);
-    }
 
-    resetForm();
+      if (editingId) {
+        await api.put(`/products/${editingId}`, payload);
+        alert("Barang berhasil diupdate");
+      } else {
+        await api.post("/products", payload);
+        alert("Barang berhasil ditambahkan");
+      }
+
+      resetForm();
+      fetchProducts();
+    } catch (error) {
+      console.error("Error saving product:", error);
+      alert(error.response?.data?.message || "Gagal menyimpan data barang");
+    }
   };
 
   const handleEdit = (item) => {
@@ -126,21 +149,36 @@ export default function BarangPage() {
     setPreviewPhoto(item.foto || null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm("Hapus peralatan ini?")) return;
-    const next = items.filter((it) => it.id !== id);
-    syncToStorage(next);
-    if (editingId === id) resetForm();
+    
+    try {
+      await api.delete(`/products/${id}`);
+      alert("Barang berhasil dihapus");
+      fetchProducts();
+      if (editingId === id) resetForm();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Gagal menghapus barang");
+    }
   };
 
-  // --- Sorting sederhana: berdasarkan nama ---
   const sortedItems = [...items].sort((a, b) =>
     a.nama.localeCompare(b.nama, "id")
   );
 
+  if (loading) {
+    return (
+      <div className="page">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          Loading products...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
-      {/* Judul Halaman */}
       <div className="page-section-header">
         <h1 className="page-section-title">Data Peralatan Kantor</h1>
         <p className="page-section-subtitle">

@@ -1,7 +1,10 @@
 // src/pages/BarangMasukPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api";
+import { useAuth } from "../context/AuthContext";
 
 export default function BarangMasukPage() {
+  const { user } = useAuth();
   const today = new Date().toISOString().slice(0, 10);
 
   const [form, setForm] = useState({
@@ -12,18 +15,35 @@ export default function BarangMasukPage() {
     catatan: "",
   });
 
-  // sementara simpan di state lokal (belum konek backend)
   const [transaksiList, setTransaksiList] = useState([]);
+  const [barangOptions, setBarangOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingSave, setLoadingSave] = useState(false);
 
-  // opsi dummy, nanti bisa diganti dari API / master barang & supplier
-  const barangOptions = [
-    "Kertas A4 70gsm",
-    "Pulpen Hitam",
-    "Mouse Wireless",
-    "Kursi Kantor",
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const supplierOptions = ["Supplier A", "Supplier B", "Supplier C"];
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [productsRes, incomingRes] = await Promise.all([
+        api.get("/products"),
+        api.get("/incoming-items")
+      ]);
+
+      const products = productsRes.data.data || productsRes.data;
+      setBarangOptions(products);
+
+      const incoming = incomingRes.data.data || incomingRes.data;
+      setTransaksiList(incoming);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Gagal memuat data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,31 +53,43 @@ export default function BarangMasukPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.barang || !form.supplier) {
-      alert("Barang dan supplier wajib dipilih.");
+    if (!form.barang) {
+      alert("Barang wajib dipilih.");
       return;
     }
 
-    const newTrx = {
-      id: Date.now(),
-      tanggal: form.tanggal,
-      barang: form.barang,
-      jumlah: form.jumlah || 0,
-      supplier: form.supplier,
-      catatan: form.catatan,
-    };
+    try {
+      setLoadingSave(true);
+      const payload = {
+        product_id: form.barang,
+        date: form.tanggal,
+        quantity: form.jumlah,
+        supplier: form.supplier,
+        notes: form.catatan,
+      };
 
-    setTransaksiList((prev) => [newTrx, ...prev]);
+      const response = await api.post("/incoming-items", payload);
+      alert("Transaksi barang masuk berhasil disimpan");
 
-    // reset jumlah & catatan, tanggal dan pilihan tetap
-    setForm((prev) => ({
-      ...prev,
-      jumlah: 1,
-      catatan: "",
-    }));
+      // Refresh data
+      fetchData();
+
+      // Reset form
+      setForm((prev) => ({
+        ...prev,
+        jumlah: 1,
+        supplier: "",
+        catatan: "",
+      }));
+    } catch (error) {
+      console.error("Error saving:", error);
+      alert(error.response?.data?.message || "Gagal menyimpan transaksi");
+    } finally {
+      setLoadingSave(false);
+    }
   };
 
   const totalTransaksi = transaksiList.length;
@@ -103,8 +135,8 @@ export default function BarangMasukPage() {
               >
                 <option value="">-- Pilih Barang --</option>
                 {barangOptions.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
+                  <option key={b.id} value={b.id}>
+                    {b.name} ({b.code}) - Stok: {b.stock}
                   </option>
                 ))}
               </select>
@@ -123,19 +155,13 @@ export default function BarangMasukPage() {
               </div>
               <div className="form-group">
                 <label>Supplier</label>
-                <select
+                <input
+                  type="text"
                   name="supplier"
                   value={form.supplier}
                   onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Pilih Supplier --</option>
-                  {supplierOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Nama supplier"
+                />
               </div>
             </div>
 
@@ -151,8 +177,8 @@ export default function BarangMasukPage() {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="btn-primary">
-                Simpan Transaksi
+              <button type="submit" className="btn-primary" disabled={loadingSave}>
+                {loadingSave ? "Menyimpan..." : "Simpan Transaksi"}
               </button>
             </div>
           </form>
@@ -182,7 +208,13 @@ export default function BarangMasukPage() {
                 </tr>
               </thead>
               <tbody>
-                {transaksiList.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center" }}>
+                      Memuat data...
+                    </td>
+                  </tr>
+                ) : transaksiList.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
@@ -200,13 +232,13 @@ export default function BarangMasukPage() {
                   transaksiList.map((trx, index) => (
                     <tr key={trx.id}>
                       <td>{index + 1}</td>
-                      <td>{trx.tanggal}</td>
-                      <td>{trx.barang}</td>
+                      <td>{new Date(trx.date).toLocaleDateString('id-ID')}</td>
+                      <td>{trx.product?.name || "-"}</td>
                       <td>
-                        <span className="badge-stock">{trx.jumlah}</span>
+                        <span className="badge-stock">{trx.quantity}</span>
                       </td>
-                      <td>{trx.supplier}</td>
-                      <td>{trx.catatan || "-"}</td>
+                      <td>{trx.supplier || "-"}</td>
+                      <td>{trx.notes || "-"}</td>
                     </tr>
                   ))
                 )}

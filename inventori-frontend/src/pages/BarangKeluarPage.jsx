@@ -27,29 +27,31 @@ export default function BarangKeluarPage() {
   /* ===================== LOAD DATA ===================== */
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoadingData(true);
-        setError("");
-
-        // NOTE: sesuaikan endpoint dengan backend kamu
-        const [barangRes, transaksiRes] = await Promise.all([
-          api.get("/barang"),
-          api.get("/barang-keluar"),
-        ]);
-
-        setBarangList(barangRes.data || []);
-        setTransaksiList(transaksiRes.data || []);
-      } catch (err) {
-        console.error(err);
-        setError("Gagal memuat data barang keluar.");
-      } finally {
-        setLoadingData(false);
-      }
-    };
-
     loadData();
   }, []);
+
+  const loadData = async () => {
+    try {
+      setLoadingData(true);
+      setError("");
+
+      const [barangRes, transaksiRes] = await Promise.all([
+        api.get("/products"),
+        api.get("/outgoing-items"),
+      ]);
+
+      const products = barangRes.data.data || barangRes.data;
+      const outgoing = transaksiRes.data.data || transaksiRes.data;
+
+      setBarangList(products);
+      setTransaksiList(outgoing);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data barang keluar.");
+    } finally {
+      setLoadingData(false);
+    }
+  };
 
   /* ===================== HANDLER FORM ===================== */
 
@@ -61,12 +63,7 @@ export default function BarangKeluarPage() {
     }));
 
     if (name === "barangId") {
-      const found = barangList.find(
-        (b) =>
-          String(b.id) === value ||
-          String(b.id_barang) === value || // jaga-jaga nama field berbeda
-          String(b.kode) === value
-      );
+      const found = barangList.find((b) => String(b.id) === value);
       setSelectedBarang(found || null);
       setLowStockWarning("");
     }
@@ -90,56 +87,27 @@ export default function BarangKeluarPage() {
       setLowStockWarning("");
 
       const payload = {
-        tanggal: form.tanggal,
-        barang_id: form.barangId,
-        jumlah: form.jumlah,
-        jenis: form.jenis,
-        keterangan: form.keterangan,
+        product_id: form.barangId,
+        date: form.tanggal,
+        quantity: form.jumlah,
+        recipient: form.jenis,
+        notes: form.keterangan,
       };
 
-      // NOTE: sesuaikan endpoint + body dengan backend kamu
-      const res = await api.post("/barang-keluar", payload);
+      await api.post("/outgoing-items", payload);
+      alert("Transaksi barang keluar berhasil disimpan");
 
-      // Misal backend mengembalikan transaksi baru & data barang yang sudah di-update
-      const created = res.data?.transaksi || res.data;
-      if (created) {
-        setTransaksiList((prev) => [created, ...prev]);
-      }
+      // Refresh data
+      loadData();
 
-      const updatedBarang =
-        res.data?.barang ||
-        res.data?.item ||
-        res.data?.updatedBarang ||
-        null;
-
-      // Kalau backend kirim stok terbaru, kita cek stok minimum untuk warning
-      if (updatedBarang) {
-        const stokSekarang =
-          updatedBarang.stok ?? updatedBarang.stock ?? updatedBarang.stok_akhir;
-        const stokMin =
-          updatedBarang.stok_min ??
-          updatedBarang.min_stock ??
-          updatedBarang.stokMinimum ??
-          0;
-
-        if (stokSekarang !== undefined && stokSekarang <= stokMin) {
-          setLowStockWarning(
-            `Stok "${updatedBarang.nama || updatedBarang.nama_barang || "-"}" sudah berada di batas minimum (${stokSekarang} ${updatedBarang.satuan || ""}).`
-          );
-        }
-
-        // sinkronkan list barang di dropdown
-        setBarangList((prev) =>
-          prev.map((b) =>
-            b.id === updatedBarang.id || b.id_barang === updatedBarang.id
-              ? { ...b, ...updatedBarang }
-              : b
-          )
+      // Check low stock
+      if (selectedBarang && selectedBarang.stock - form.jumlah < 10) {
+        setLowStockWarning(
+          `Stok "${selectedBarang.name}" sudah berada di batas minimum (${selectedBarang.stock - form.jumlah} ${selectedBarang.unit}).`
         );
-        setSelectedBarang(updatedBarang);
       }
 
-      // reset jumlah & keterangan
+      // Reset form
       setForm((prev) => ({
         ...prev,
         jumlah: 1,
@@ -147,7 +115,9 @@ export default function BarangKeluarPage() {
       }));
     } catch (err) {
       console.error(err);
-      setError("Gagal menyimpan transaksi barang keluar.");
+      const errorMsg = err.response?.data?.message || "Gagal menyimpan transaksi barang keluar.";
+      setError(errorMsg);
+      alert(errorMsg);
     } finally {
       setLoadingSave(false);
     }
@@ -207,12 +177,8 @@ export default function BarangKeluarPage() {
               >
                 <option value="">-- Pilih Barang --</option>
                 {barangList.map((b) => (
-                  <option
-                    key={b.id || b.id_barang}
-                    value={b.id || b.id_barang}
-                  >
-                    {b.nama || b.nama_barang}{" "}
-                    {b.kode ? `(${b.kode})` : b.kode_barang ? `(${b.kode_barang})` : ""}
+                  <option key={b.id} value={b.id}>
+                    {b.name} ({b.code}) - Stok: {b.stock} {b.unit}
                   </option>
                 ))}
               </select>
@@ -220,18 +186,8 @@ export default function BarangKeluarPage() {
                 <small style={{ fontSize: 11, color: "#6b7280" }}>
                   Stok saat ini:{" "}
                   <strong>
-                    {selectedBarang.stok ??
-                      selectedBarang.stock ??
-                      selectedBarang.stok_akhir ??
-                      0}{" "}
-                    {selectedBarang.satuan || ""}
-                  </strong>{" "}
-                  {selectedBarang.stok_min !== undefined && (
-                    <>
-                      | Stok minimum:{" "}
-                      <strong>{selectedBarang.stok_min}</strong>
-                    </>
-                  )}
+                    {selectedBarang.stock} {selectedBarang.unit}
+                  </strong>
                 </small>
               )}
             </div>
@@ -343,30 +299,19 @@ export default function BarangKeluarPage() {
                 ) : (
                   transaksiList.map((tx) => (
                     <tr key={tx.id}>
-                      <td>{tx.tanggal || tx.tanggal_keluar}</td>
-                      <td>
-                        {tx.barang?.nama ||
-                          tx.nama_barang ||
-                          tx.barang_nama ||
-                          "-"}
-                      </td>
-                      <td>{tx.jumlah}</td>
+                      <td>{new Date(tx.date).toLocaleDateString('id-ID')}</td>
+                      <td>{tx.product?.name || "-"}</td>
+                      <td>{tx.quantity}</td>
                       <td
                         style={{
                           textTransform: "capitalize",
                           fontSize: 12,
                         }}
                       >
-                        {tx.jenis || tx.status || "-"}
+                        {tx.recipient || "-"}
                       </td>
-                      <td>{tx.keterangan || "-"}</td>
-                      <td>
-                        {tx.user?.name ||
-                          tx.petugas ||
-                          tx.dibuat_oleh ||
-                          user?.name ||
-                          "-"}
-                      </td>
+                      <td>{tx.notes || "-"}</td>
+                      <td>{user?.name || "-"}</td>
                     </tr>
                   ))
                 )}

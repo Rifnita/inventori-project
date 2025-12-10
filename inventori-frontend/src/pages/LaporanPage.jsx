@@ -30,22 +30,21 @@ export default function LaporanPage() {
       setLoading(true);
       setError("");
 
-      // ❗❗ SESUAIKAN endpoint berikut dengan backend-mu
       const [stokRes, masukRes, keluarRes] = await Promise.all([
-        api.get("/laporan/stok-akhir", {
+        api.get("/reports/stock", {
           params: { from: fromDate, to: toDate },
         }),
-        api.get("/laporan/barang-masuk", {
-          params: { from: fromDate, to: toDate },
+        api.get("/reports/incoming", {
+          params: { start_date: fromDate, end_date: toDate },
         }),
-        api.get("/laporan/barang-keluar", {
-          params: { from: fromDate, to: toDate },
+        api.get("/reports/outgoing", {
+          params: { start_date: fromDate, end_date: toDate },
         }),
       ]);
 
-      setStokAkhir(stokRes.data || []);
-      setBarangMasuk(masukRes.data || []);
-      setBarangKeluar(keluarRes.data || []);
+      setStokAkhir(stokRes.data?.data || []);
+      setBarangMasuk(masukRes.data?.data || []);
+      setBarangKeluar(keluarRes.data?.data || []);
     } catch (err) {
       console.error(err);
       setError("Gagal memuat laporan inventori.");
@@ -94,15 +93,14 @@ export default function LaporanPage() {
 
     // Stok akhir
     stokAkhir.forEach((item) => {
-      // ❗ sesuaikan field: kode, nama, stok, satuan
       rows.push([
         "Stok Akhir",
         "",
-        esc(item.kode || item.kode_barang),
-        esc(item.nama || item.nama_barang),
+        esc(item.code),
+        esc(item.name),
         "",
-        esc(item.stok),
-        esc(item.satuan),
+        esc(item.stock),
+        esc(item.unit),
         "",
         "",
         "",
@@ -113,15 +111,15 @@ export default function LaporanPage() {
     barangMasuk.forEach((t) => {
       rows.push([
         "Barang Masuk",
-        esc(t.tanggal),
-        esc(t.kode_barang),
-        esc(t.nama_barang),
-        esc(t.jumlah),
+        esc(t.date),
+        esc(t.product?.code),
+        esc(t.product?.name),
+        esc(t.quantity),
         "",
-        esc(t.satuan),
+        esc(t.product?.unit),
         esc(t.supplier),
         "",
-        esc(t.keterangan),
+        esc(t.notes),
       ]);
     });
 
@@ -129,15 +127,15 @@ export default function LaporanPage() {
     barangKeluar.forEach((t) => {
       rows.push([
         "Barang Keluar",
-        esc(t.tanggal),
-        esc(t.kode_barang),
-        esc(t.nama_barang),
-        esc(t.jumlah),
+        esc(t.date),
+        esc(t.product?.code),
+        esc(t.product?.name),
+        esc(t.quantity),
         "",
-        esc(t.satuan),
-        esc(t.penerima),
-        esc(t.jenis_keluar),
-        esc(t.keterangan),
+        esc(t.product?.unit),
+        esc(t.recipient),
+        "-",
+        esc(t.notes),
       ]);
     });
 
@@ -211,7 +209,7 @@ export default function LaporanPage() {
   };
 
   const totalStok = stokAkhir.reduce(
-    (sum, item) => sum + (Number(item.stok) || 0),
+    (sum, item) => sum + (Number(item.stock) || 0),
     0
   );
 
@@ -373,14 +371,14 @@ export default function LaporanPage() {
                     stokAkhir.map((item, idx) => (
                       <tr key={item.id || idx}>
                         <td>{idx + 1}</td>
-                        <td>{item.nama || item.nama_barang}</td>
-                        <td>{item.kode || item.kode_barang}</td>
+                        <td>{item.name}</td>
+                        <td>{item.code}</td>
                         <td>
                           <span className="badge-stock">
-                            {item.stok}
+                            {item.stock}
                           </span>
                         </td>
-                        <td>{item.satuan}</td>
+                        <td>{item.unit}</td>
                       </tr>
                     ))
                   )}
@@ -427,13 +425,13 @@ export default function LaporanPage() {
                       barangMasuk.map((t, idx) => (
                         <tr key={t.id || idx}>
                           <td>{idx + 1}</td>
-                          <td>{t.tanggal}</td>
-                          <td>{t.nama_barang}</td>
-                          <td>{t.kode_barang}</td>
-                          <td>{t.jumlah}</td>
-                          <td>{t.satuan}</td>
+                          <td>{t.date}</td>
+                          <td>{t.product?.name}</td>
+                          <td>{t.product?.code}</td>
+                          <td>{t.quantity}</td>
+                          <td>{t.product?.unit}</td>
                           <td>{t.supplier}</td>
-                          <td>{t.keterangan}</td>
+                          <td>{t.notes}</td>
                         </tr>
                       ))
                     )}
@@ -483,14 +481,14 @@ export default function LaporanPage() {
                       barangKeluar.map((t, idx) => (
                         <tr key={t.id || idx}>
                           <td>{idx + 1}</td>
-                          <td>{t.tanggal}</td>
-                          <td>{t.nama_barang}</td>
-                          <td>{t.kode_barang}</td>
-                          <td>{t.jumlah}</td>
-                          <td>{t.satuan}</td>
-                          <td>{t.jenis_keluar}</td>
-                          <td>{t.penerima}</td>
-                          <td>{t.keterangan}</td>
+                          <td>{t.date}</td>
+                          <td>{t.product?.name}</td>
+                          <td>{t.product?.code}</td>
+                          <td>{t.quantity}</td>
+                          <td>{t.product?.unit}</td>
+                          <td>-</td>
+                          <td>{t.recipient}</td>
+                          <td>{t.notes}</td>
                         </tr>
                       ))
                     )}
