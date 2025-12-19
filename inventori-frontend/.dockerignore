@@ -9,12 +9,3 @@ README.md
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-src
-public
-index.html
-package.json
-package-lock.json
-vite.config.js
-tailwind.config.js
-postcss.config.js
-eslint.config.js

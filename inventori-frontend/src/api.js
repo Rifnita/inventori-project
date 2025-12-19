@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://inventori-backend-894858667370.us-central1.run.app/api",
+  baseURL: "https://inventori-backend-108371083602.us-central1.run.app/api",
 });
 
 api.interceptors.request.use((config) => {

@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -14,6 +14,17 @@ export default function Navbar() {
     <header className="topbar">
       <div className="topbar-inner">
         <div className="topbar-left">
+          {/* === HAMBURGER MENU (Mobile) === */}
+          <button
+            type="button"
+            className="topbar-menu-btn"
+            onClick={onMenuClick}
+            aria-label="Menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+          </button>
 
           {/* === TOMBOL BACK === */}
           <button
