@@ -96,11 +96,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="login-footer">
           <button type="button" className="link-footer">
-            Ketentuan Penggunaan
-          </button>
-          <span>|</span>
-          <button type="button" className="link-footer">
-            Kebijakan Privasi
+            Komputasi Awan 2025
           </button>
         </div>
       </div>
