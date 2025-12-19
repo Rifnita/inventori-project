@@ -1,0 +1,957 @@
+/* ---------- GLOBAL ---------- */
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #f3f7fc;
+  color: #111827;
+}
+
+/* =========================================
+   LOGIN PAGE
+   ========================================= */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* menjaga elemen tetap di atas */
+  background-color: #f3f7fc;
+  padding-top: 40px; /* beri jarak dari atas */
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 450px; /* sedikit lebih besar biar proporsional */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* pastikan brand juga center */
+  padding: 0 20px; /* padding kiri-kanan agar seimbang */
+}
+
+.login-brand {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #00a3ff;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 6px 14px rgba(0, 163, 255, 0.3);
+  margin-bottom: 8px;
+}
+
+.brand-text {
+  text-align: center;
+}
+
+.brand-title {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.brand-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.login-card {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  padding: 28px 28px 22px; /* padding kanan-kiri sama */
+  border: 1px solid #e5e7eb;
+}
+
+.login-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0284c7;
+  margin-bottom: 18px;
+}
+
+/* Error box */
+.login-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.form-group input {
+  width: 100%;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+  background-color: #eff6ff;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+}
+
+/* Tombol utama */
+.btn-primary {
+  width: 100%;
+  margin-top: 10px;
+  height: 38px;
+  border-radius: 6px;
+  border: none;
+  background-color: #0ea5e9;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(14, 165, 233, 0.35);
+}
+
+.btn-primary:hover {
+  background-color: #0284c7;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Link kecil */
+.link-small {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #0284c7;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Footer */
+.login-footer {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+  align-items: center;
+}
+
+.link-footer {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 11px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.link-footer:hover {
+  color: #0284c7;
+}
+
+/* =========================================
+   APP LAYOUT (SETELAH LOGIN)
+   ========================================= */
+
+.app-root {
+  min-height: 100vh;
+  background-color: #f3f7fc;
+}
+
+.app-shell {
+  display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* ---------- TOP BAR (HEADER BIRU) ---------- */
+
+.topbar {
+  background: linear-gradient(90deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
+}
+
+.topbar-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Tombol BACK di topbar */
+.topbar-back-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background-color: #0ea5e9;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.topbar-back-btn:hover {
+  background-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.topbar-back-btn:active {
+  transform: translateY(0);
+}
+
+.topbar-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background-color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.6);
+}
+
+.topbar-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.topbar-subtitle {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-user-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.topbar-logout {
+  border: none;
+  background-color: rgba(15, 23, 42, 0.15);
+  color: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.topbar-logout:hover {
+  background-color: rgba(15, 23, 42, 0.28);
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar {
+  width: 220px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.sidebar-user-role {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.side-link {
+  font-size: 13px;
+  color: #4b5563;
+  text-decoration: none;
+  padding: 7px 9px;
+  border-radius: 8px;
+}
+
+.side-link:hover {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.side-link-active {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+/* =========================================
+   DASHBOARD & PAGE CONTENT
+   ========================================= */
+
+.page {
+  min-height: calc(100vh - 60px);
+}
+
+/* Header di dalam konten */
+.page-header-bar {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.page-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.page-header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.page-header-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Row kartu statistik */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* kartu statistik */
+.stat-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 15px rgba(15, 23, 42, 0.05);
+}
+
+.stat-card.small {
+  max-width: 260px;
+}
+
+.stat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* warna icon statistik */
+.stat-icon.purple {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.stat-icon.green {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.stat-icon.orange {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+.stat-icon.yellow {
+  background-color: #fef9c3;
+  color: #d97706;
+}
+
+.stat-icon.blue {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Kartu tabel stok minimum */
+.table-card {
+  margin-top: 18px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  padding: 16px 18px 12px;
+}
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.table-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.table-card-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-small-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.table-select {
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+}
+
+.table-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.table-search {
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+/* tabel */
+.table-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table thead {
+  background-color: #f9fafb;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.table th {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* badge stok */
+.badge-stock {
+  display: inline-flex;
+  min-width: 24px;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background-color: #f97316;
+  color: #ffffff;
+}
+
+.table-footer {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ---------- PAGE SECTION (judul halaman) ---------- */
+
+.page-section-header {
+  margin-bottom: 16px;
+}
+
+.page-section-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.page-section-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ---------- GRID 2 KOLOM (form + tabel) ---------- */
+
+.page-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr);
+  gap: 16px;
+}
+
+/* ---------- CARD FORM TAMBAH BARANG ---------- */
+
+.form-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  padding: 16px 18px 18px;
+}
+
+.form-card-header {
+  margin-bottom: 12px;
+}
+
+.form-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.form-card-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* grid form di dalam card */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* gunakan style .form-group yang sudah ada untuk input, ini hanya tambahan */
+.form-group-inline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.form-actions {
+  margin-top: 6px;
+}
+
+/* style untuk select supaya sama dengan input login */
+.form-group select {
+  width: 100%;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+  background-color: #eff6ff;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+}
+
+/* angka (number) sama seperti input biasa */
+.form-group input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* judul kecil untuk jumlah data di tabel */
+.table-card-title-count {
+  font-weight: 400;
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+/* ---------- LAPORAN / REPORT STYLES ---------- */
+
+.report-card {
+  /* cuma pakai .table-card yang sudah ada, ini tambahan kalau mau beda */
+}
+
+.report-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.report-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.report-card-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* bar filter di sebelah kanan */
+.report-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.report-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.report-filter-group input[type="date"] {
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 0 8px;
+  font-size: 13px;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.report-filter-group input[type="date"]:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+}
+
+.report-filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* tombol kecil */
+.btn-sm {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+/* tombol secondary (putih, border biru) */
+.btn-secondary {
+  border-radius: 6px;
+  border: 1px solid #0ea5e9;
+  background-color: #ffffff;
+  color: #0284c7;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e0f2fe;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+   @media (max-width: 900px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .page-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .report-filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ======== PROFILE PAGE ======== */
+
+.profile-grid {
+  align-items: flex-start;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+}
+
+.profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.profile-hint {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ---------- FOTO / ACTION DI TABEL BARANG ---------- */
+
+.item-photo-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.item-photo-preview {
+  margin-top: 6px;
+}
+
+.item-photo-placeholder {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* tombol kecil di dalam tabel (Edit / Hapus) */
+.table-action-link {
+  border: none;
+  background: none;
+  color: #0284c7;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.table-action-link:hover {
+  text-decoration: underline;
+}
+
+.table-action-link.danger {
+  color: #b91c1c;
+}
+
+.report-view-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.report-view-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.view-pill {
+  border-radius: 999px;
+  padding: 0 14px;
+}
+
+.view-pill.active {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  border-color: #0ea5e9;
+}
+
+
