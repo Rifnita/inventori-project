@@ -84,17 +84,7 @@ export default function ProfilePage() {
           </div>
 
           {message && (
-            <div
-              style={{
-                marginBottom: 12,
-                fontSize: 12,
-                color: "#047857",
-                backgroundColor: "#ecfdf5",
-                border: "1px solid #bbf7d0",
-                borderRadius: 6,
-                padding: "6px 8px",
-              }}
-            >
+            <div className="alert alert-success">
               {message}
             </div>
           )}
@@ -136,7 +126,6 @@ export default function ProfilePage() {
                 type="submit"
                 className="btn-primary"
                 disabled={saving}
-                style={{ width: "auto", minWidth: 120 }}
               >
                 {saving ? "Menyimpan..." : "Simpan Profil"}
               </button>
@@ -180,7 +169,7 @@ export default function ProfilePage() {
             <div className="form-actions">
               <button
                 type="submit"
-                className="btn-secondary btn-sm"
+                className="btn-secondary"
                 disabled={pwdSaving}
               >
                 {pwdSaving ? "Memproses..." : "Ubah Password"}

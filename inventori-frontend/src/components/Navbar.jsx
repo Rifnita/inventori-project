@@ -10,20 +10,24 @@ export default function Navbar({ onMenuClick }) {
     navigate(-1); // kembali ke halaman sebelumnya
   };
 
+  const handleDashboard = () => {
+    navigate("/"); // ke halaman dashboard
+  };
+
   return (
     <header className="topbar">
       <div className="topbar-inner">
         <div className="topbar-left">
-          {/* === HAMBURGER MENU (Mobile) === */}
-          <button
+          {/* === HAMBURGER MENU === */}
+          <button 
             type="button"
-            className="topbar-menu-btn"
+            className="hamburger-btn" 
             onClick={onMenuClick}
             aria-label="Menu"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 12h18M3 6h18M3 18h18"/>
-            </svg>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
           </button>
 
           {/* === TOMBOL BACK === */}
@@ -37,8 +41,14 @@ export default function Navbar({ onMenuClick }) {
           </button>
 
           {/* === LOGO & BRAND === */}
-          <div className="topbar-logo">INV</div>
-          <div className="topbar-brand">
+          <div 
+            className="topbar-logo" 
+            onClick={handleDashboard}
+            style={{ cursor: 'pointer' }}
+          >
+            INV
+          </div>
+          <div className="topbar-brand" onClick={handleDashboard} style={{ cursor: 'pointer' }}>
             <div className="topbar-title">Gudang Kantor</div>
             <div className="topbar-subtitle">Dashboard Inventori</div>
           </div>

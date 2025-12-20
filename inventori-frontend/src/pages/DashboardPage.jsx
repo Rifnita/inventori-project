@@ -81,8 +81,8 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="page">
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <div className="page p-4">
+        <div className="text-center py-8">
           Loading dashboard data...
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Kartu ringkasan staff */}
-        <div className="stats-row">
+        <div className="stat-grid">
           <div className="stat-card small">
             <div className="stat-icon green">📥</div>
             <div className="stat-info">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Aksi cepat */}
-        <div className="table-card" style={{ marginTop: 12, paddingTop: 12 }}>
+        <div className="table-card">
           <div className="table-card-header">
             <div>
               <div className="table-card-title">Aksi Cepat</div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
                 Catat transaksi barang lebih cepat.
               </div>
             </div>
-            <div className="table-card-tools">
+            <div className="quick-actions">
               <button
                 type="button"
                 className="btn-primary btn-sm"
@@ -236,7 +236,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="stats-row">
+      <div className="stat-grid">
         <div className="stat-card small">
           <div className="stat-icon purple">📦</div>
           <div className="stat-info">
@@ -249,9 +249,7 @@ export default function DashboardPage() {
           <div className="stat-icon green">📥</div>
           <div className="stat-info">
             <span className="stat-label">Data Barang Masuk</span>
-            <span className="stat-value">
-              {summary.totalBarangMasuk ?? 0}
-            </span>
+            <span className="stat-value">{summary.totalBarangMasuk ?? 0}</span>
           </div>
         </div>
 
@@ -259,9 +257,7 @@ export default function DashboardPage() {
           <div className="stat-icon orange">📤</div>
           <div className="stat-info">
             <span className="stat-label">Data Barang Keluar</span>
-            <span className="stat-value">
-              {summary.totalBarangKeluar ?? 0}
-            </span>
+            <span className="stat-value">{summary.totalBarangKeluar ?? 0}</span>
           </div>
         </div>
 
@@ -290,12 +286,12 @@ export default function DashboardPage() {
           <table className="table">
             <thead>
               <tr>
-                <th style={{ width: "50px" }}>No.</th>
+                <th>No.</th>
                 <th>ID Barang</th>
                 <th>Nama Barang</th>
-                <th style={{ width: "120px" }}>Jenis Barang</th>
-                <th style={{ width: "80px" }}>Stok</th>
-                <th style={{ width: "80px" }}>Satuan</th>
+                <th>Jenis</th>
+                <th>Stok</th>
+                <th>Satuan</th>
               </tr>
             </thead>
             <tbody>
@@ -314,9 +310,7 @@ export default function DashboardPage() {
                     <td>{item.nama || item.namaBarang}</td>
                     <td>{item.jenis || item.jenisBarang}</td>
                     <td>
-                      <span className="badge-stock">
-                        {item.stok ?? item.stock ?? 0}
-                      </span>
+                      <span className="badge-stock">{item.stok ?? item.stock ?? 0}</span>
                     </td>
                     <td>{item.satuan || "-"}</td>
                   </tr>

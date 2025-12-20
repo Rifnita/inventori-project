@@ -1,25 +1,32 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-export default function Sidebar() {
-  const { user } = useAuth();
+export default function Sidebar({ isOpen, onClose, user: propUser }) {
+  const { user: contextUser } = useAuth();
+  const user = propUser || contextUser;
 
   return (
-    <aside className="sidebar">
-      {/* User info */}
-      <div className="sidebar-top">
-        <div className="sidebar-user-avatar">
-          {user?.name?.charAt(0).toUpperCase() || "A"}
+    <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+      {/* Close button for mobile */}
+      <button className="sidebar-close-btn" onClick={onClose}>
+        ✕
+      </button>
+
+      {/* Profile section - mobile only */}
+      <div className="sidebar-profile">
+        <div className="sidebar-profile-avatar">
+          {user?.name?.charAt(0).toUpperCase() || "U"}
         </div>
-        <div className="sidebar-user-info">
-          <div className="sidebar-user-name">{user?.name || "User"}</div>
-          <div className="sidebar-user-role">
-            {user?.role === "admin" ? "ADMIN" : "STAFF"}
+        <div className="sidebar-profile-info">
+          <div className="sidebar-profile-greeting">Hello,</div>
+          <div className="sidebar-profile-name">{user?.name || "User"}</div>
+          <div className="sidebar-profile-role">
+            {user?.role === "admin" ? "Admin" : "Staff"}
           </div>
         </div>
       </div>
 
-      {/* MASTER: khusus admin */}
+      {/* MASTER: khusus admin */
       {user?.role === "admin" && (
         <div className="sidebar-section">
           <div className="sidebar-section-title">MASTER</div>

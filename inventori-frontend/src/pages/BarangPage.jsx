@@ -170,7 +170,7 @@ export default function BarangPage() {
   if (loading) {
     return (
       <div className="page">
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <div className="loading-text">
           Loading products...
         </div>
       </div>
@@ -198,7 +198,7 @@ export default function BarangPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="form-grid">
+          <form onSubmit={handleSubmit}>
             {/* Nama & Kode */}
             <div className="form-group">
               <label>Nama Peralatan</label>
@@ -339,7 +339,6 @@ export default function BarangPage() {
                 ({items.length} data)
               </span>
             </div>
-            {/* nanti bisa ditambah filter/search kalau perlu */}
           </div>
 
           <div className="table-wrapper">
@@ -359,8 +358,7 @@ export default function BarangPage() {
                 {sortedItems.length === 0 ? (
                   <tr>
                     <td colSpan={7} style={{ textAlign: "center" }}>
-                      Belum ada peralatan yang terdaftar. Tambahkan data dari
-                      form di sebelah kiri.
+                      Belum ada peralatan yang terdaftar. Tambahkan data dari form di atas.
                     </td>
                   </tr>
                 ) : (
@@ -374,7 +372,7 @@ export default function BarangPage() {
                             className="item-photo-thumb"
                           />
                         ) : (
-                          <span className="item-photo-placeholder">-</span>
+                          <span>-</span>
                         )}
                       </td>
                       <td>{item.kode}</td>

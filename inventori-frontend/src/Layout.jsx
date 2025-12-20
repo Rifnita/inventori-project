@@ -13,11 +13,17 @@ function Layout() {
   const linkClass = ({ isActive }) =>
     "side-link" + (isActive ? " side-link-active" : "");
 
-  const closeSidebar = () => setSidebarOpen(false);
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
 
   return (
     <div className="app-root">
-      <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+      <Navbar onMenuClick={toggleSidebar} />
       <div className="app-shell">
         {/* Mobile Overlay */}
         {sidebarOpen && (
@@ -26,63 +32,68 @@ function Layout() {
 
         {/* SIDEBAR */}
         <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
-          {/* user box */}
-          <div className="sidebar-top">
-            <div className="sidebar-user-avatar">
-              {(user?.name || "A").charAt(0).toUpperCase()}
+          {/* Close button for mobile */}
+          <button className="sidebar-close-btn" onClick={closeSidebar}>
+            ✕
+          </button>
+
+          {/* Profile section - shown on both desktop and mobile */}
+          <div className="sidebar-profile">
+            <div className="sidebar-profile-avatar">
+              {user?.name?.charAt(0).toUpperCase() || "A"}
             </div>
-            <div className="sidebar-user-info">
-              <div className="sidebar-user-name">{user?.name || "Admin"}</div>
-              <div className="sidebar-user-role">
-                {(user?.role || "admin").toUpperCase()}
+            <div className="sidebar-profile-info">
+              <div className="sidebar-profile-name">{user?.name || "User"}</div>
+              <div className="sidebar-profile-role">
+                {user?.role === "admin" ? "ADMIN" : "STAFF"}
               </div>
             </div>
           </div>
 
-          {/* MASTER – khusus admin */}
-          {isAdmin && (
+          {/* Navigation - same structure for both desktop and mobile */}
+          <nav className="sidebar-nav">
+            {/* MASTER – khusus admin */}
+            {isAdmin && (
+              <div className="sidebar-section">
+                <div className="sidebar-section-title">MASTER</div>
+                <NavLink to="/barang" className={linkClass} onClick={closeSidebar}>
+                  Barang
+                </NavLink>
+              </div>
+            )}
+
+            {/* TRANSAKSI */}
             <div className="sidebar-section">
-              <div className="sidebar-section-title">MASTER</div>
-              <NavLink to="/barang" className={linkClass} onClick={closeSidebar}>
-                Barang
+              <div className="sidebar-section-title">TRANSAKSI</div>
+              <NavLink to="/barang-masuk" className={linkClass} onClick={closeSidebar}>
+                Barang Masuk
+              </NavLink>
+              <NavLink to="/barang-keluar" className={linkClass} onClick={closeSidebar}>
+                Barang Keluar
               </NavLink>
             </div>
-          )}
 
-          {/* TRANSAKSI – admin & staff */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">TRANSAKSI</div>
-            <NavLink to="/barang-masuk" className={linkClass} onClick={closeSidebar}>
-              Barang Masuk
-            </NavLink>
-            <NavLink to="/barang-keluar" className={linkClass} onClick={closeSidebar}>
-              Barang Keluar
-            </NavLink>
-          </div>
-
-          {/* LAPORAN – kalau mau hanya admin, pakai {isAdmin && (...)} */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">LAPORAN</div>
-            <NavLink to="/laporan" className={linkClass} onClick={closeSidebar}>
-              Laporan
-            </NavLink>
-          </div>
-
-          {/* PENGATURAN */}
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">PENGATURAN</div>
-
-            <NavLink to="/profil" className={linkClass} onClick={closeSidebar}>
-              Profil Saya
-            </NavLink>
-
-            {/* 🌟 MENU BARU: hanya muncul kalau role = admin */}
-            {isAdmin && (
-              <NavLink to="/users" className={linkClass} onClick={closeSidebar}>
-                Manajemen Staff
+            {/* LAPORAN */}
+            <div className="sidebar-section">
+              <div className="sidebar-section-title">LAPORAN</div>
+              <NavLink to="/laporan" className={linkClass} onClick={closeSidebar}>
+                Laporan
               </NavLink>
-            )}
-          </div>
+            </div>
+
+            {/* PENGATURAN */}
+            <div className="sidebar-section">
+              <div className="sidebar-section-title">PENGATURAN</div>
+              <NavLink to="/profil" className={linkClass} onClick={closeSidebar}>
+                Profil Saya
+              </NavLink>
+              {isAdmin && (
+                <NavLink to="/users" className={linkClass} onClick={closeSidebar}>
+                  Manajemen Staff
+                </NavLink>
+              )}
+            </div>
+          </nav>
         </aside>
 
         {/* KONTEN HALAMAN */}
